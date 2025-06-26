@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  ssh-jail:
+    image: ghcr.io/linuxserver/openssh-server
+    container_name: ssh-jail
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Asia/Taipei
+      - PASSWORD_ACCESS=true
+      - USER_NAME= #<please enter your username here>
+      - USER_PASSWORD= #<please enter your password here>
+    ports:
+      - "2200:2222"  # container sshd listens on 2222
+    volumes:
+      - ./config:/config
+      - ./shared:/home/testuser/shared
+    restart: unless-stopped

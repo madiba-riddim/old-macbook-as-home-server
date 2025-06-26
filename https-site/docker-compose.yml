@@ -1,0 +1,57 @@
+version: '3'
+
+services:
+  nginx-proxy:
+    image: jwilder/nginx-proxy
+    container_name: nginx-proxy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - certs:/etc/nginx/certs
+      - vhost:/etc/nginx/vhost.d
+      - html:/usr/share/nginx/html
+    networks:
+      - webproxy
+    restart: unless-stopped
+
+  nginx-proxy-acme:
+    image: nginxproxy/acme-companion
+    container_name: nginx-proxy-acme
+    depends_on:
+      - nginx-proxy
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - certs:/etc/nginx/certs
+      - acme:/etc/acme.sh
+      - html:/usr/share/nginx/html
+    environment:
+      - NGINX_PROXY_CONTAINER=nginx-proxy
+    networks:
+      - webproxy
+    restart: unless-stopped
+
+  mysite:
+    image: nginx
+    container_name: mysite
+    environment:
+      - VIRTUAL_HOST= # <please enter your website here>
+      - LETSENCRYPT_HOST= # <please enter your website here as above>
+      - LETSENCRYPT_EMAIL= # <please enter your email here>
+    volumes:
+      - ./finexo-html:/usr/share/nginx/html:ro
+      - ./logs:/var/log/nginx 
+    networks:
+      - webproxy
+    restart: unless-stopped
+
+volumes:
+  certs:
+  vhost:
+  html:
+  acme:
+
+networks:
+  webproxy:
+    external: false
