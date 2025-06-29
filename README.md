@@ -39,7 +39,8 @@ repo-root/
 ├── ssh-jail/
 │   ├── docker-compose.yml   # For OpenSSH jail
 │   └── shared/              # Shared folder for jail users
-├── pf.conf                  # macOS firewall config example
+├── firewall/
+│   └── pf.conf              # macOS firewall config example
 └── README.md
 ```
 
